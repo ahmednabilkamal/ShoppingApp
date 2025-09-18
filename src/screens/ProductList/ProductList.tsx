@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useContext } from 'react';
 import {
   FlatList,
   Text,
@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 
 import { Product } from '../../types/ProductTypes';
+import { ThemeContext } from '../../themes/ThemeContext';
 import { ProductsList } from '../../data/mockData';
 import styles from './styles';
 
@@ -17,6 +18,8 @@ const ProductList: React.FC<{
 }> = ({ onProductPress }) => {
   const [products] = useState<Product[]>(ProductsList);
   const [refreshing, setRefreshing] = useState(false);
+  const { theme } = useContext(ThemeContext)!;
+  const isDarkMode = theme === 'dark';
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -26,33 +29,45 @@ const ProductList: React.FC<{
   }, []);
 
   const renderProduct = ({ item }: { item: Product }) => (
-    <TouchableOpacity onPress={() => onProductPress(item)}>
-      <View>
-        <Image
-          source={{ uri: item.image }}
-          resizeMode="cover"
-          style={styles.productImg}
-        />
-        <Text>{item.name}</Text>
-        <Text>${item.price}</Text>
+    <TouchableOpacity
+      onPress={() => onProductPress(item)}
+      style={styles.productCard}
+    >
+      <Image source={{ uri: item.image }} style={styles.productImage} />
+      <View style={styles.productInfo}>
+        <Text
+          style={[styles.productName, { color: isDarkMode ? '#fff' : '#000' }]}
+        >
+          {item.name}
+        </Text>
+        <Text
+          style={[styles.productPrice, { color: isDarkMode ? '#bbb' : '#555' }]}
+        >
+          ${item.price.toFixed(2)}
+        </Text>
       </View>
     </TouchableOpacity>
   );
 
   return (
-    <FlatList
-      data={products}
-      renderItem={renderProduct}
-      keyExtractor={item => item.id.toString()}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-      getItemLayout={(data, index) => ({
-        length: 120,
-        offset: 120 * index,
-        index,
-      })}
-    />
+    <View
+      style={[
+        styles.container,
+        { backgroundColor: isDarkMode ? '#121212' : '#f0f0f0' },
+      ]}
+    >
+      <FlatList
+        data={products}
+        renderItem={renderProduct}
+        keyExtractor={item => item.id.toString()}
+        numColumns={2}
+        columnWrapperStyle={styles.row}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        showsVerticalScrollIndicator={false}
+      />
+    </View>
   );
 };
 

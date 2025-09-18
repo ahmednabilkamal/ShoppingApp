@@ -1,44 +1,15 @@
 import React, { useContext } from 'react';
-import { TouchableOpacity, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import {
-  createStackNavigator,
-  StackScreenProps,
-} from '@react-navigation/stack';
-import { useSelector } from 'react-redux';
+import { createStackNavigator } from '@react-navigation/stack';
 
-import { Product } from '../types/ProductTypes';
-import { RootState } from '../types/CartItem';
 import { ThemeContext } from '../themes/ThemeContext';
 import { Cart, ProductDetailsScreen, ProductList } from '../screens';
+import { StackType } from '../types/StackType';
+import CartIcon from '../components/CartIcon';
+import HeaderLeft from '../components/HeaderLeft';
+import Header from '../components/Header';
 
-type RootStackParamList = {
-  Product: undefined;
-  ProductDetails: { product: Product };
-  Cart: undefined;
-};
-
-const Stack = createStackNavigator<RootStackParamList>();
-
-// Define the header component for the cart icon.
-const CartIcon = ({
-  navigation,
-}: StackScreenProps<RootStackParamList, 'Product'>) => {
-  const cartItems = useSelector((state: RootState) => state.cart);
-  const { theme } = useContext(ThemeContext)!;
-  const isDarkMode = theme === 'dark';
-
-  return (
-    <TouchableOpacity
-      onPress={() => navigation.navigate('Cart')}
-      style={{ marginRight: 15 }}
-    >
-      <Text style={{ fontSize: 24, color: isDarkMode ? 'white' : 'black' }}>
-        🛒 ({cartItems.length})
-      </Text>
-    </TouchableOpacity>
-  );
-};
+const Stack = createStackNavigator<StackType>();
 
 const AppNavigator = () => {
   const { theme, toggleTheme } = useContext(ThemeContext)!;
@@ -64,12 +35,7 @@ const AppNavigator = () => {
             title: 'Products',
             headerRight: () => <CartIcon navigation={navigation} />,
             headerLeft: () => (
-              <TouchableOpacity
-                onPress={toggleTheme}
-                style={{ marginLeft: 15 }}
-              >
-                <Text style={{ fontSize: 24 }}>{isDarkMode ? '🌞' : '🌙'}</Text>
-              </TouchableOpacity>
+              <HeaderLeft onPress={toggleTheme} isDarkMode={isDarkMode} />
             ),
           })}
         >
@@ -82,7 +48,14 @@ const AppNavigator = () => {
           )}
         </Stack.Screen>
 
-        <Stack.Screen name="ProductDetails" options={{ title: 'Details' }}>
+        <Stack.Screen
+          name="ProductDetails"
+          options={({ route, navigation }) => ({
+            headerTitle: '',
+            headerLeft: () => <Header title={route.params.product.name} />,
+            headerRight: () => <CartIcon navigation={navigation} />,
+          })}
+        >
           {props => (
             <ProductDetailsScreen product={props.route.params.product} />
           )}
@@ -91,7 +64,10 @@ const AppNavigator = () => {
         <Stack.Screen
           name="Cart"
           component={Cart}
-          options={{ title: 'Shopping Cart' }}
+          options={{
+            headerTitle: '',
+            headerLeft: () => <Header title="Shopping Cart" />,
+          }}
         />
       </Stack.Navigator>
     </NavigationContainer>
