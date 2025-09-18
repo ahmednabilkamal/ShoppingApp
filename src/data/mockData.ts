@@ -1,7 +1,7 @@
 import { Product } from '../types/ProductTypes';
 
 // products list link https://jsonfakery.com/products
-export const mockProducts: Product[] = [
+export const ProductsList: Product[] = [
   {
     id: 'a67a5bb5-ee8c-4bbb-ae11-e51adc3e0a4f',
     name: 'Majestic Device',
