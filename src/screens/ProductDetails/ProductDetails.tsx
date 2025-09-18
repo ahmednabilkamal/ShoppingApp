@@ -27,4 +27,4 @@ const ProductDetailsScreen: React.FC<{ product: Product }> = ({ product }) => {
   );
 };
 
-export default ProductDetailsScreen;
+export { ProductDetailsScreen };
