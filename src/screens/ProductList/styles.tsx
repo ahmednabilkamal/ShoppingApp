@@ -41,6 +41,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
   },
+  loadingContainer: {
+    paddingVertical: 20,
+    borderTopWidth: 1,
+    borderColor: '#CED0CE',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    fontSize: 16,
+    marginTop: 10,
+    textAlign: 'center',
+  },
 });
 
 export default styles;
